@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Current Polls</h2>
+        {% for poll in polls %}
+        <div class="card poll-card">
+            <div class="card-body">
+                <h5 class="card-title">{{ poll.name }}</h5>
+                <p class="card-text">
+                    Created by {{ poll.creator }} on {{ poll.created }}
+                </p>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-success me-2">Agree: {{ poll.votes_agree|length }}</span>
+                        <span class="badge bg-danger">Disagree: {{ poll.votes_disagree|length }}</span>
+                    </div>
+                    
+                    <form method="POST" class="d-inline">
+                        <input type="hidden" name="action" value="vote">
+                        <input type="hidden" name="poll_id" value="{{ poll.id }}">
+                        
+                        {% if username in poll.votes_agree %}
+                        <button type="submit" name="vote_type" value="disagree" class="btn btn-outline-danger btn-sm">Switch to Disagree</button>
+                        {% elif username in poll.votes_disagree %}
+                        <button type="submit" name="vote_type" value="agree" class="btn btn-outline-success btn-sm">Switch to Agree</button>
+                        {% else %}
+                        <div>
+                            <button type="submit" name="vote_type" value="agree" class="btn btn-success btn-sm me-1">Agree</button>
+                            <button type="submit" name="vote_type" value="disagree" class="btn btn-danger btn-sm">Disagree</button>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Create New Poll</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="action" value="create_poll">
+                    <div class="mb-3">
+                        <label class="form-label">Poll Name</label>
+                        <input type="text" name="poll_name" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Poll</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>How to Vote in Chat</h5>
+            </div>
+            <div class="card-body">
+                <p>Send a message in the chat with:</p>
+                <ul>
+                    <li><code>#agree_PollName</code> to vote agree</li>
+                    <li><code>#disagree_PollName</code> to vote disagree</li>
+                </ul>
+                <p>Replace "PollName" with the actual poll name</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
